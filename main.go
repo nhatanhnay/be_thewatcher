@@ -43,9 +43,14 @@ func initRouter() *gin.Engine {
 
 	// Middleware CORS
 	router.Use(func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "http://localhost:4200") // Allow all domains (consider restricting this in production)
-		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization") // Allowed headers
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS") // Allowed methods
+		origin := c.Request.Header.Get("Origin") // Get the request origin
+		if origin == "http://103.81.87.196:4200" || origin == "http://localhost:4200" {
+			c.Header("Access-Control-Allow-Origin", origin) // Allow the specific origin
+		} else {
+			c.Header("Access-Control-Allow-Origin", "http://103.81.87.196:4200") // Fallback to a default origin
+		}
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
 		// Handle preflight requests
 		if c.Request.Method == http.MethodOptions {
