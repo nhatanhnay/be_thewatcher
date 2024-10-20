@@ -9,13 +9,15 @@ import (
 )
 
 type WatchDetail struct {
-	IdWatch 	 int     `json:"id"`
-	LinkHref     string  `json:"linkHref"`
+	Id 	 int     `json:"id"`
+	Image     string  `json:"image"`
 	Name         string  `json:"name"`
 	Price        float64 `json:"price"`
 	Rating       float64 `json:"rating"`
-	UrlImage     string  `json:"urlImage"`
+	Href     string  `json:"href"`
 	NumberRating int     `json:"numberRating"`
+	Description  string  `json:"description"`
+	Category     string  `json:"category"`
 }
 
 type OrderInfo struct {
@@ -44,7 +46,7 @@ func GetWatchDetails(c *gin.Context) {
 
 	for rows.Next() {
 		var watchDetail WatchDetail
-		err := rows.Scan(&watchDetail.IdWatch, &watchDetail.LinkHref, &watchDetail.Name, &watchDetail.Price, &watchDetail.Rating, &watchDetail.UrlImage, &watchDetail.NumberRating)
+		err := rows.Scan(&watchDetail.Id, &watchDetail.Image, &watchDetail.Name, &watchDetail.Price, &watchDetail.Rating, &watchDetail.Href, &watchDetail.NumberRating, &watchDetail.Description, &watchDetail.Category)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -96,4 +98,71 @@ func InsertOrderHandler(c *gin.Context) {
 	// Respond with a success message and the inserted order ID
 	c.JSON(http.StatusOK, gin.H{"message": "Order successfully inserted", "order_id": lastInsertID})
 }
+
+func GetWatchByCategory(c *gin.Context) {
+    var requestBody struct {
+        Category string `json:"category"`
+    }
+
+    // Parse JSON từ phần thân request
+    if err := c.ShouldBindJSON(&requestBody); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+        return
+    }
+
+    db := connection.GetDB()
+
+    // Sử dụng LIKE để tìm kiếm chuỗi con
+    rows, err := db.Query("SELECT * FROM watch_details WHERE category LIKE '%' || $1 || '%' ORDER BY id_watch", requestBody.Category)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    var watchDetails []WatchDetail
+
+    for rows.Next() {
+        var watchDetail WatchDetail
+        err := rows.Scan(&watchDetail.Id, &watchDetail.Image, &watchDetail.Name, &watchDetail.Price, &watchDetail.Rating, &watchDetail.Href, &watchDetail.NumberRating, &watchDetail.Description, &watchDetail.Category)
+        if err != nil {
+            log.Fatal(err)
+        }
+        watchDetails = append(watchDetails, watchDetail)
+    }
+
+    c.JSON(200, watchDetails)
+}
+
+func GetWatchDetailsById(c *gin.Context) {
+	var requestBody struct {
+		ID int `json:"id"`
+	}
+
+	// Parse JSON từ phần thân request
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	db := connection.GetDB()
+
+	// Sử dụng LIKE để tìm kiếm chuỗi con
+	rows, err := db.Query("SELECT * FROM watch_details WHERE id_watch = $1", requestBody.ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var watchDetails []WatchDetail
+
+	for rows.Next() {
+		var watchDetail WatchDetail
+		err := rows.Scan(&watchDetail.Id, &watchDetail.Image, &watchDetail.Name, &watchDetail.Price, &watchDetail.Rating, &watchDetail.Href, &watchDetail.NumberRating, &watchDetail.Description, &watchDetail.Category)
+		if err != nil {
+			log.Fatal(err)
+		}
+		watchDetails = append(watchDetails, watchDetail)
+	}
+
+	c.JSON(200, watchDetails)
+}
+
 
