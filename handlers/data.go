@@ -165,4 +165,35 @@ func GetWatchDetailsById(c *gin.Context) {
 	c.JSON(200, watchDetails)
 }
 
+func GetWatchByName(c *gin.Context) {
+	var requestBody struct {
+		Name string `json:"name"`
+	}
 
+	// Parse JSON từ phần thân request
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	db := connection.GetDB()
+
+	// Sử dụng LIKE để tìm kiếm chuỗi con
+	rows, err := db.Query("SELECT * FROM watch_details WHERE name LIKE '%' || $1 || '%' ORDER BY id_watch", requestBody.Name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var watchDetails []WatchDetail
+
+	for rows.Next() {
+		var watchDetail WatchDetail
+		err := rows.Scan(&watchDetail.Id, &watchDetail.Image, &watchDetail.Name, &watchDetail.Price, &watchDetail.Rating, &watchDetail.Href, &watchDetail.NumberRating, &watchDetail.Description, &watchDetail.Category)
+		if err != nil {
+			log.Fatal(err)
+		}
+		watchDetails = append(watchDetails, watchDetail)
+	}
+
+	c.JSON(200, watchDetails)
+}
