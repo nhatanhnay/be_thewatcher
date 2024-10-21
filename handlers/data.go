@@ -165,7 +165,7 @@ func GetWatchDetailsById(c *gin.Context) {
 	c.JSON(200, watchDetails)
 }
 
-func GetWatchByName(c *gin.Context) {
+func GetWatchBySearch(c *gin.Context) {
 	var requestBody struct {
 		Name string `json:"name"`
 	}
@@ -178,8 +178,8 @@ func GetWatchByName(c *gin.Context) {
 
 	db := connection.GetDB()
 
-	// Sử dụng LIKE để tìm kiếm chuỗi con
-	rows, err := db.Query("SELECT * FROM watch_details WHERE name LIKE '%' || $1 || '%' ORDER BY id_watch", requestBody.Name)
+	// Sử dụng LIKE để tìm kiếm chuỗi con trong coojt name vaf category
+	rows, err := db.Query("SELECT * FROM watch_details WHERE name ILIKE '%' || $1 || '%' OR category ILIKE '%' || $1 || '%' ORDER BY id_watch", requestBody.Name)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -20,5 +20,5 @@ func DataRoutes(router *gin.Engine) {
 	router.POST("/insert-order", handlers.InsertOrderHandler)
 	router.POST("/get-watch-by-category", handlers.GetWatchByCategory)
 	router.POST("/get-watch-by-id", handlers.GetWatchDetailsById)
-	router.POST("/get-watch-by-name", handlers.GetWatchDetailsByName)
+	router.POST("/get-watch-by-name", handlers.GetWatchBySearch)
 }
