@@ -16,9 +16,9 @@ func InitRoutes(router *gin.Engine) {
 }
 
 func DataRoutes(router *gin.Engine) {
-	router.POST("/watch-details", handlers.GetWatchDetails)	
-	router.POST("/insert-order", handlers.InsertOrderHandler)
-	router.POST("/get-watch-by-category", handlers.GetWatchByCategory)
-	router.POST("/get-watch-by-id", handlers.GetWatchDetailsById)
-	router.POST("/get-watch-by-name", handlers.GetWatchBySearch)
+	router.POST("/api/watch-details", handlers.GetWatchDetails)	
+	router.POST("/api/insert-order", handlers.InsertOrderHandler)
+	router.POST("/api/get-watch-by-category", handlers.GetWatchByCategory)
+	router.POST("/api/get-watch-by-id", handlers.GetWatchDetailsById)
+	router.POST("/api/get-watch-by-name", handlers.GetWatchBySearch)
 }
